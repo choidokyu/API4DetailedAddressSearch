@@ -7,7 +7,9 @@ if (process.env.NODE_ENV !== 'production') {
 exports.handler = async function(event) {
   const { admCd, rnMgtSn, udrtYn, buldMnnm, buldSlno } = event.queryStringParameters;
   const confmKey = process.env.CONFM_KEY;
-  const resultType = 'json';
+  //const resultType = 'json';
+  const resultType = event.queryStringParameters.resultType || 'json';
+
 
   const apiUrl = `https://business.juso.go.kr/addrlink/addrDetailApi.do?confmKey=${confmKey}&admCd=${admCd}&rnMgtSn=${rnMgtSn}&udrtYn=${udrtYn}&buldMnnm=${buldMnnm}&buldSlno=${buldSlno}&resultType=${resultType}`;
 
