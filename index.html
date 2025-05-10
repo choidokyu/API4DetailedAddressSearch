@@ -1,51 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <title>상세주소 검색</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    label { display: block; margin-top: 10px; }
+    input[type="text"] { width: 200px; }
+    button { margin-top: 15px; padding: 5px 10px; }
+    .result-box { margin-top: 20px; }
+    .result-box ul { padding-left: 20px; }
+    .result-box li { margin: 4px 0; }
+    .gray { color: gray; }
+  </style>
 </head>
 <body>
+
+  <h2>상세주소 검색 API</h2>
   <form id="addrForm">
-    <label>행정구역코드: <input type="text" name="admCd" value="1111010100"></label><br>
-    <label>도로명코드: <input type="text" name="rnMgtSn" value="1111000000"></label><br>
-    <label>지하여부(0=지상): <input type="text" name="udrtYn" value="0"></label><br>
-    <label>건물본번: <input type="text" name="buldMnnm" value="123"></label><br>
-    <label>건물부번: <input type="text" name="buldSlno" value="0"></label><br>
+    <label>행정구역코드: <input type="text" name="admCd" value="1135010200"></label>
+    <label>도로명코드: <input type="text" name="rnMgtSn" value="113503109006"></label>
+    <label>지하여부(0=지상): <input type="text" name="udrtYn" value="0"></label>
+    <label>건물본번: <input type="text" name="buldMnnm" value="111"></label>
+    <label>건물부번: <input type="text" name="buldSlno" value="0"></label>
     <button type="button" onclick="getDetailAddress()">상세주소 조회</button>
   </form>
 
-  <div id="result"></div>
+  <div class="result-box" id="result"></div>
 
   <script>
-function getDetailAddress() {
-  const params = new URLSearchParams($("#addrForm").serialize());
-  fetch(`/.netlify/functions/addrDetail?` + params)
-    .then(response => {
-      console.log("🔵 Raw response:", response);
-      return response.json();
-    })
-    .then(data => {
-      console.log("🟢 Parsed data:", data);
-      if (!data.results || !data.results.common) {
-        throw new Error("API 응답 형식이 잘못되었습니다.");
-      }
-      if (data.results.common.errorCode !== "0") {
-        alert("❌ 오류: " + data.results.common.errorMessage);
-        return;
-      }
+    function getDetailAddress() {
+      const params = new URLSearchParams($("#addrForm").serialize());
+      fetch(`/.netlify/functions/addrDetail?` + params)
+        .then(response => {
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          return response.json();
+        })
+        .then(data => {
+          console.log("📦 API 응답:", data);
+          if (!data.results || !data.results.common) {
+            throw new Error("API 응답 형식 오류");
+          }
+          if (data.results.common.errorCode !== "0") {
+            $("#result").html(`<p class="gray">❌ 오류: ${data.results.common.errorMessage}</p>`);
+            return;
+          }
+          const jusoList = data.results.juso;
+          if (!jusoList || jusoList.length === 0) {
+            $("#result").html('<p class="gray">📭 해당 주소에 상세주소가 없습니다.</p>');
+            return;
+          }
 
-      const list = data.results.juso.map(j =>
-        `<p>${j.dongNm}, ${j.floorNm}층 ${j.hoNm}</p>`
-      ).join('');
-      $("#result").html(list);
-    })
-    .catch(error => {
-      console.error("❌ 오류 발생:", error);
-      $("#result").html(`<p style="color:red;">오류 발생: ${error.message}</p>`);
-    });
-}
-
+          const listItems = jusoList.map(j =>
+            `<li>${j.dongNm} ${j.floorNm}층 ${j.hoNm}</li>`
+          ).join('');
+          $("#result").html(`<h3>📋 검색결과 (${jusoList.length}건)</h3><ul>${listItems}</ul>`);
+        })
+        .catch(error => {
+          console.error("❌ 오류:", error);
+          $("#result").html(`<p class="gray">❗ 에러 발생: ${error.message}</p>`);
+        });
+    }
   </script>
+
 </body>
 </html>
