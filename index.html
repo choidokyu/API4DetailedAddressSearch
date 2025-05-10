@@ -18,34 +18,33 @@
   <div id="result"></div>
 
   <script>
-    function getDetailAddress() {
-      const params = new URLSearchParams($("#addrForm").serialize());
-      fetch(`/.netlify/functions/addrDetail?` + params)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (!data.results || !data.results.common) {
-            throw new Error("API 응답 형식이 잘못되었습니다.");
-          }
-          if (data.results.common.errorCode !== "0") {
-            alert("❌ 오류: " + data.results.common.errorMessage);
-            return;
-          }
+function getDetailAddress() {
+  const params = new URLSearchParams($("#addrForm").serialize());
+  fetch(`/.netlify/functions/addrDetail?` + params)
+    .then(response => {
+      console.log("🔵 Raw response:", response);
+      return response.json();
+    })
+    .then(data => {
+      console.log("🟢 Parsed data:", data);
+      if (!data.results || !data.results.common) {
+        throw new Error("API 응답 형식이 잘못되었습니다.");
+      }
+      if (data.results.common.errorCode !== "0") {
+        alert("❌ 오류: " + data.results.common.errorMessage);
+        return;
+      }
 
-          const list = data.results.juso.map(j =>
-            `<p>${j.dongNm}, ${j.floorNm}층 ${j.hoNm}</p>`
-          ).join('');
-          $("#result").html(list);
-        })
-        .catch(error => {
-          console.error("❌ 오류 발생:", error);
-          $("#result").html(`<p style="color:red;">오류 발생: ${error.message}</p>`);
-        });
-    }
+      const list = data.results.juso.map(j =>
+        `<p>${j.dongNm}, ${j.floorNm}층 ${j.hoNm}</p>`
+      ).join('');
+      $("#result").html(list);
+    })
+    .catch(error => {
+      console.error("❌ 오류 발생:", error);
+      $("#result").html(`<p style="color:red;">오류 발생: ${error.message}</p>`);
+    });
+}
 
   </script>
 </body>
