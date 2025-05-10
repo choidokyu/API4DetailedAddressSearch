@@ -11,7 +11,7 @@ exports.handler = async function(event) {
   console.log("confmKey :" , confmKey);
   const resultType = 'json';
 
-  const apiUrl = `https://business.juso.go.kr/addrlink/addrDetailApi.do?confmKey=${confmKey}&admCd=${admCd}&rnMgtSn=${rnMgtSn}&udrtYn=${udrtYn}&buldMnnm=${buldMnnm}&buldSlno=${buldSlno}&resultType=${resultType}`;
+  const apiUrl = `https://business.juso.go.kr/addrlink/addrDetailApi.do?admCd=${admCd}&rnMgtSn=${rnMgtSn}&udrtYn=${udrtYn}&buldMnnm=${buldMnnm}&buldSlno=${buldSlno}&resultType=${resultType}&confmKey=${confmKey}`;
 
   try {
     const response = await fetch(apiUrl);
