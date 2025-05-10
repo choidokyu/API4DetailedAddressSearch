@@ -9,8 +9,11 @@ exports.handler = async function(event) {
   const confmKey = process.env.CONFM_KEY;
   //const resultType = 'json';
   const resultType = event.queryStringParameters.resultType || 'json';
-
-
+  
+  const contentType = resultType === 'xml'
+  ? 'application/xml'
+  : 'application/json';
+  
   const apiUrl = `https://business.juso.go.kr/addrlink/addrDetailApi.do?confmKey=${confmKey}&admCd=${admCd}&rnMgtSn=${rnMgtSn}&udrtYn=${udrtYn}&buldMnnm=${buldMnnm}&buldSlno=${buldSlno}&resultType=${resultType}`;
 
   try {
@@ -21,7 +24,8 @@ exports.handler = async function(event) {
       body: data,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        //'Content-Type': 'application/json'
+        'Content-Type': contentType
       }
     };
   } catch (error) {
