@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>상세주소 검색</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <form id="addrForm">
+    <label>행정구역코드: <input type="text" name="admCd" value="1111010100"></label><br>
+    <label>도로명코드: <input type="text" name="rnMgtSn" value="1111000000"></label><br>
+    <label>지하여부(0=지상): <input type="text" name="udrtYn" value="0"></label><br>
+    <label>건물본번: <input type="text" name="buldMnnm" value="123"></label><br>
+    <label>건물부번: <input type="text" name="buldSlno" value="0"></label><br>
+    <button type="button" onclick="getDetailAddress()">상세주소 조회</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    function getDetailAddress() {
+      const params = new URLSearchParams($("#addrForm").serialize());
+      fetch(`/.netlify/functions/addrDetail?` + params)
+        .then(response => response.json())
+        .then(data => {
+          if (data.results.common.errorCode !== "0") {
+            alert(data.results.common.errorMessage);
+            return;
+          }
+          const list = data.results.juso.map(j =>
+            `<p>${j.dongNm}, ${j.floorNm}층 ${j.hoNm}</p>`
+          ).join('');
+          $("#result").html(list);
+        })
+        .catch(() => alert("API 호출 실패"));
+    }
+  </script>
+</body>
+</html>
