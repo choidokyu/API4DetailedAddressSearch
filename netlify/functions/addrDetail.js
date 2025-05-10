@@ -6,7 +6,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 exports.handler = async function(event) {
   const { admCd, rnMgtSn, udrtYn, buldMnnm, buldSlno } = event.queryStringParameters;
-  const confmKey = process.env.CONFM_KEY;
+  //const confmKey = process.env.CONFM_KEY;
+  const confmKey = 'U01TX0FVVEgyMDI1MDUxMDA5MzQ0MjExNTczNzE=';
   console.log("confmKey :" , confmKey);
   const resultType = 'json';
 
