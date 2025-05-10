@@ -7,13 +7,8 @@ if (process.env.NODE_ENV !== 'production') {
 exports.handler = async function(event) {
   const { admCd, rnMgtSn, udrtYn, buldMnnm, buldSlno } = event.queryStringParameters;
   const confmKey = process.env.CONFM_KEY;
-  //const resultType = 'json';
   const resultType = event.queryStringParameters.resultType || 'json';
-  
-  const contentType = resultType === 'xml'
-  ? 'application/xml'
-  : 'application/json';
-  
+
   const apiUrl = `https://business.juso.go.kr/addrlink/addrDetailApi.do?confmKey=${confmKey}&admCd=${admCd}&rnMgtSn=${rnMgtSn}&udrtYn=${udrtYn}&buldMnnm=${buldMnnm}&buldSlno=${buldSlno}&resultType=${resultType}`;
 
   try {
@@ -24,8 +19,7 @@ exports.handler = async function(event) {
       body: data,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        //'Content-Type': 'application/json'
-        'Content-Type': contentType
+        'Content-Type': resultType === 'xml' ? 'application/xml' : 'application/json'
       }
     };
   } catch (error) {
